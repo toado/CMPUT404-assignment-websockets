@@ -59,9 +59,14 @@ Contributors
 * Mark Galloway
 * Abram Hindle
 * Cole Mackenzie
+* Justin Tan
 
 Sources / References
 =====================
 
 https://github.com/uofa-cmput404/cmput404-slides/blob/master/examples/WebSocketsExamples/chat.py
+https://github.com/uofa-cmput404/cmput404-slides/blob/master/examples/WebSocketsExamples/static/chat.html
 * For all things websockets, used the shown class example
+
+https://github.com/toado/CMPUT404-assignment-ajax/
+* Reused parts of assignment 4 to make drawings better looking

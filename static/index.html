@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width" />
     <meta name="license" content="
         Copyright 2013 Google, Abram Hindle
+        Copyright 2021, Justin Tan
         
         Licensed under the Apache License, Version 2.0 (the "License");
         you may not use this file except in compliance with the License.
@@ -47,15 +48,23 @@ world = {};
 //XXX: TODO Make this prettier!
 function drawCircle(context,entity) {
     with(context) {
-        beginPath();                
+        beginPath();              
         lineWidth = 3;
         var x = entity["x"];
         var y = entity["y"];
         //moveTo(x,y);
-        fillStyle = entity["colour"];
+
+        var r1 = entity["radius"] > 10 ? 5 : 2
+        var r2 = entity["radius"] > 10 ? 35 : 10
+        let grd = context.createRadialGradient(x, y, r1, x, y, r2);
+        grd.addColorStop(0, "white");
+        grd.addColorStop(1, entity["colour"]);
+
+        fillStyle = grd;
         strokeStyle = fillStyle;
         arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
         stroke();                                
+        fill();                             
     }
 }
 
@@ -233,15 +242,17 @@ mouse = (function() {
 // Add the application specific mouse listeners!
 //XXX: TODO Make these prettier!
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'#4180ff',
+                          'radius':40});
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'#ff5656',
+                          'radius':40});
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green',
+    addEntityWithoutName({'x':x,'y':y,'colour':'#98ff98',
                           'radius':10});
 });
 
@@ -256,7 +267,6 @@ function wsSetup() {
     socket = new WebSocket(url);
     socket.onopen = function() {
         //XXX: TODO What are you going to do here?
-        sock
     };
     socket.onerror = function(msg) {
         debug("WebSocket Error:" + msg.data);
@@ -264,7 +274,12 @@ function wsSetup() {
     socket.onmessage = function(msg) {  
         try {
             debug("WebSocket Recv:" + msg.data);
-            //XXX: TODO What are you going to do here?            
+            //XXX: TODO What are you going to do here?     
+            var message = JSON.parse(msg.data);
+            for (key in message) {
+                world[key] = message[key]
+                drawNextFrame();
+            }
         } catch (e) {
             alert("socket on message: " + e);
         }
